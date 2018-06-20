@@ -471,7 +471,7 @@ class poweremail_core_accounts(osv.osv):
         def parse_body_html(pem_body_html, pem_body_text):
             html = pem_body_text if not pem_body_html else pem_body_html
             if (
-                html.strip()[0] != '<' and
+                html and html.strip()[0] != '<' and
                 "<br/>" not in html and
                 "<br>" not in html
             ):
