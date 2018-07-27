@@ -733,11 +733,12 @@ class poweremail_core_accounts(osv.osv):
             self.write(cr, uid, coreaccountid, {'last_mail_id': last_mail_id+1})
             return False
         #TODO:If multipart save attachments and save ids
+        parsed = Email.parse(mail.as_string())
         vals = {
             'pem_from':self.decode_header_text(mail['From']),
-            'pem_to':self.decode_header_text(mail['To']),
-            'pem_cc':self.decode_header_text(mail['cc']),
-            'pem_bcc':self.decode_header_text(mail['bcc']),
+            'pem_to': ','.join(parsed.to),
+            'pem_cc': ','.join(parsed.cc),
+            'pem_bcc': ','.join(parsed.bcc),
             'pem_recd':mail['date'],
             'date_mail':self.extracttime(
                             mail['date']
@@ -750,7 +751,7 @@ class poweremail_core_accounts(osv.osv):
             'pem_body_html':'Mail not downloaded...', #TODO:Replace
             'pem_account_id':coreaccountid,
             'pem_message_id': mail['Message-Id'],
-            'pem_mail_orig': str(mail)
+            'pem_mail_orig': unicode(parsed.mime_string, errors='ignore')
         }
         parsed_mail = self.get_payloads(mail)
         vals['pem_body_text'] = parsed_mail['text']
